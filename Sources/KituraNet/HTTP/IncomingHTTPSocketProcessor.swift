@@ -120,15 +120,20 @@ public class IncomingHTTPSocketProcessor: IncomingSocketProcessor {
     /// convert the HTTP parser's status to our own.
     private func parse(_ buffer: NSData) {
         let parsingStatus = request.parse(buffer)
-        guard  parsingStatus.error == nil  else  {
+        print(self.request,"\nparse = ",buffer)
+        if parsingStatus.error != nil {
             Log.error("Failed to parse a request. \(parsingStatus.error!)")
-            if  let response = response {
-                response.statusCode = .badRequest
-                do {
-                    try response.end()
-                }
-                catch {}
-            }
+            print(parsingStatus)
+            self.request.isSSL = true
+            self.request.midData = buffer as Data
+            self.delegate?.handle(request: self.request, response: self.response)
+            //            if  let response = response {
+            //                response.statusCode = .badRequest
+            //                do {
+            //                    try response.end()
+            //                }
+            //                catch {}
+            //            }
             return
         }
         

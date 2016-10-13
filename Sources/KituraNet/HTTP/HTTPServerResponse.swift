@@ -121,6 +121,27 @@ public class HTTPServerResponse : ServerResponse {
         }
     }
 
+    public func endConnect() throws {
+        if let processor = processor {
+            try flushStart()
+            
+            let keepAlive = processor.isKeepAlive
+            
+            if  keepAlive {
+                processor.keepAlive()
+            }
+            
+            buffer.length = 0
+            let okStr = "HTTP/1.0 200 Connection established\r\n\r\n"
+            buffer.append(okStr.data(using: String.Encoding.utf8)!)
+            processor.write(from: buffer)
+            buffer.length = 0
+            
+            if !keepAlive {
+                processor.close()
+            }
+        }
+    }
     /// Begin flushing the buffer
     ///
     /// - Throws: Socket.error if an error occurred while writing to a socket

@@ -26,6 +26,13 @@ import Socket
 /// and the `ClientResponse` class.
 public class HTTPServerRequest: HTTPIncomingMessage, ServerRequest {
 
+    /// 扩展
+    public var midSocket: Socket?
+    
+    public var isSSL = false
+    
+    public var midData: Data?
+    
     /// Client socket
     private let clientSocket: Socket
     
